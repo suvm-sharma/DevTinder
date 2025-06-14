@@ -1,34 +1,43 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken')
 dotenv.config({ path: './config.env' });
+const validator = require('validator');
+
 
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: [true, 'please enter you first name'],
+        required: [true, 'Please enter your first name'],
         trim: true
     },
     lastName: {
         type: String,
-        required: [true, 'please enter you last name'],
+        required: [true, 'Please enter your last name'],
         trim: true
     },
     email: {
         type: String,
-        required: [true, 'please enter your email'],
+        required: [true, 'Please enter your email'],
         trim: true,
-        unique: true
+        unique: true,
+        validate: {
+            validator: function (value) {
+                return validator.isEmail(value);
+            },
+            message: "Please enter a valid email address"
+        }
     },
     password: {
         type: String,
-        required: [true, 'please enter password'],
+        required: [true, 'Please enter password'],
         min: 8,
         max: 16
     },
     gender: {
         type: String,
-        required: [true, 'please enter gender'],
+        required: [true, 'Please enter gender'],
         enum: ['male', 'female', 'other']
     },
     birthdate: {
@@ -44,6 +53,15 @@ const userSchema = new mongoose.Schema({
     bio: {
         type: String
     },
+    // connection:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: {
+    //         type: 'ConnectionRequest'
+    //     }
+    // }
+},
+{
+    timestamps: true
 });
 
 // pre 'save' hook or middleware
@@ -56,6 +74,19 @@ userSchema.pre('save', async function (next) {
     next();
 })
 
+// mongoose Schema method
+userSchema.methods.correctPassword = async function (enteredPassword) {
+    return bcrypt.compare(enteredPassword, this.password);
+}
+
+// mongoose Schema method
+userSchema.methods.signJwt = async function () {
+    const secret = process.env.JWT_SECRET;
+    const expiresIn = process.env.EXPIRES_IN;
+
+    const token = jwt.sign({ _id: this._id }, secret, { expiresIn });
+    return token;
+}
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
