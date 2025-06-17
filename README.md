@@ -31,7 +31,18 @@
             - pm2 stop <name of the process> [ to stop the running process ]
             - pm2 delete <name of the process> [ to delete the running process ]
             - pm2 start npm --name "dev-tinder-backend" -- start [ custom name of the process ]
-            - 
+            - config nginx - /etc/nginx/sites-available/default
+            - sudo systemctl [ to restart nginx ]
+
+        # Nginx config:
+            Frontend = https://
+            Backend = https://
+
+            Domain name = devtinder.com => <path of frontend>
+
+            Frontend = devtinder.com
+            Backend = devtinder.com:7777 => devtinder.com/api
+
 
 
 - TO exit from AWS mahine

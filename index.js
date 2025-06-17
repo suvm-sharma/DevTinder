@@ -6,12 +6,6 @@ dotenv.config({ path: './config.env' });
 const db_url = process.env.DB_URL;
 const port = process.env.PORT || 2000;
 
-console.log('db_url -->', db_url);
-console.log('db_url type -->', typeof db_url);
-console.log('-------');
-console.log('port -->', port);
-console.log('port -->', typeof port);
-
 mongoose
   .connect(db_url)
   .then(() => {
